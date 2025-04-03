@@ -1,0 +1,356 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Профиль {{ current_user.username }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div class="card dark-form mb-4" style="max-width: 400px;">
+        <div class="card-body text-center">
+            <!-- Аватар -->
+            {% if current_user.profile.avatar_url %}
+            <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.profile.avatar_url) }}"
+                 class="rounded-circle mb-3 img-profile"
+                 alt="Аватар"
+                 style="width: 140px; height: 140px; object-fit: cover;">
+            {% else %}
+            <div class="avatar-placeholder rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center"
+                 style="width: 140px; height: 140px; background-color: #2E2F45;">
+                <i class="bi bi-person-circle fs-1" style="color: #8AB2A6;"></i>
+            </div>
+            {% endif %}
+
+            <!-- Имя и фамилия -->
+            <h1 class="form-title mb-2" style="color: #ACD3A8; font-size: 1.8rem;">
+                {{ current_user.first_name }} {{ current_user.last_name }}
+            </h1>
+
+            <!-- Логин -->
+            <p class="form-link mb-3" style="color: #8AB2A6; font-size: 1.1rem;">
+                @{{ current_user.username }}
+            </p>
+
+            <!-- Биография -->
+            {% if current_user.profile.bio %}
+            <div class="bio-text mt-3 px-3" style="color: #F6F1DE; font-size: 1rem;">
+                {{ current_user.profile.bio }}
+            </div>
+            {% endif %}
+
+            <!-- Кнопка редактирования (сохранил вашу оригинальную) -->
+            <div class="mt-4">
+                <a href="{{ url_for('student.edit_profile') }}"
+                   class="btn form-btn"
+                   style="background: #8AB2A6; color: #2A2B3F; border: none;">
+                    <i class="bi bi-pencil-square me-2"></i>Редактировать
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Фильтр по категориям -->
+
+
+<!-- Заголовок секции -->
+<div class="d-flex align-items-center mb-4">
+    <h2 class="form-title me-3">Portfolio</h2>
+    <div class="flex-grow-1 border-top border-accent"></div>
+    <div class="ms-3">
+        <a href="{{ url_for('student.organize_works', user_id=current_user.id) }}"
+           class="btn form-btn me-2">
+            <i class="bi bi-columns-gap"></i> ORGANIZE
+        </a>
+        <div class="btn-group">
+            <button class="btn form-btn dropdown-toggle"
+                    type="button"
+                    data-bs-toggle="dropdown">
+                <i class="bi bi-plus-lg"></i> ADD ITEM
+            </button>
+            <ul class="dropdown-menu dark-dropdown">
+                <li><a class="dropdown-item" href="{{ url_for('student.new_work') }}?type=link">
+                    <i class="bi bi-link-45deg me-2"></i>Ссылка
+                </a></li>
+                <li><a class="dropdown-item" href="{{ url_for('student.new_work') }}?type=pdf">
+                    <i class="bi bi-file-pdf me-2"></i>PDF
+                </a></li>
+                <li><a class="dropdown-item" href="{{ url_for('student.new_work') }}?type=video">
+                    <i class="bi bi-camera-reels me-2"></i>Видео
+                </a></li>
+                <li><a class="dropdown-item" href="{{ url_for('student.new_work') }}?type=image">
+                    <i class="bi bi-image me-2"></i>Изображение
+                </a></li>
+                <li><a class="dropdown-item" href="{{ url_for('student.new_work') }}?type=category">
+                    <i class="bi bi-tag me-2"></i>Категория
+                </a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="mb-4">
+    <form method="get" class="me-3">
+        <select name="category" class="form-select dark-select"
+                style="width: 200px;"
+                onchange="this.form.submit()">
+            <option value="">Все категории</option>
+            {% for category in categories %}
+            <option value="{{ category }}" {% if category==request.args.get('category') %}selected{% endif %}>
+                {{ category }}
+            </option>
+            {% endfor %}
+        </select>
+    </form>
+
+</div>
+
+<!-- Сетка работ -->
+<div class="row g-4 justify-content-center">
+    {% if works %}
+    {% for work in works %}
+    {% if work.content_category == 'category' %}
+    <!-- Карточка категории -->
+    <div class="col-md-12">
+        <div class="category-card p-3 work-card d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold text-center mb-0 flex-grow-1">{{ work.category }}</h4>
+            <div class="d-flex gap-2">
+                <!-- Кнопка редактирования -->
+                <a href="{{ url_for('student.edit_work', work_id=work.id) }}" class="btn btn-sm work-card-btn">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <!-- Кнопка удаления -->
+                <form action="{{ url_for('student.delete_work', work_id=work.id) }}" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-sm work-card-btn"
+                            onclick="return confirm('Удалить категорию?')">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Обычная работа -->
+    <div class="col-md-4">
+        <div class="card h-100 work-card">
+            {% if work.content_category == 'image' and work.file_url %}
+            <div class="card-img-container"
+                 style="height: 200px; overflow: hidden; cursor: pointer;"
+                 data-bs-toggle="modal"
+                 data-bs-target="#imageModal"
+                 onclick="document.getElementById('modalImage').src = '{{ url_for('static', filename='uploads/images/' + work.file_url) }}'">
+                <img src="{{ url_for('static', filename='uploads/images/' + work.file_url) }}"
+                     class="img-fluid"
+                     alt="{{ work.title }}"
+                     style="object-fit: cover; height: 100%; width: 100%;">
+            </div>
+            {% elif work.content_category == 'pdf' and work.file_url %}
+            <div class="card-header work-card-header">
+                <i class="bi bi-filetype-pdf"></i> PDF документ
+                <a href="{{ url_for('student.view_pdf', filename=work.file_url) }}"
+                   class="btn btn-sm work-card-btn"
+                   target="_blank">
+                    Просмотреть
+                </a>
+            </div>
+            {% elif work.content_category == 'video' and work.video_url %}
+            <div class="card-video-container"
+                 style="height: 200px; cursor: pointer;"
+                 data-bs-toggle="modal"
+                 data-bs-target="#videoModal"
+                 data-video-url="{{ url_for('static', filename='uploads/videos/' + work.video_url) }}">
+                <div class="ratio ratio-16x9">
+                    <video class="w-100 h-100" style="object-fit: cover;">
+                        <source src="{{ url_for('static', filename='uploads/videos/' + work.video_url) }}">
+                    </video>
+                    <div class="position-absolute top-50 start-50 translate-middle">
+                        <i class="bi bi-play-circle-fill text-white" style="font-size: 3rem;"></i>
+                    </div>
+                </div>
+            </div>
+            {% elif work.content_category == 'link' and work.url %}
+            <div class="card-header work-card-header">
+                <i class="bi bi-link-45deg"></i> Ссылка
+                <a href="{{ work.url }}"
+                   target="_blank"
+                   class="btn btn-sm work-card-btn">
+                    Открыть
+                </a>
+            </div>
+            {% endif %}
+
+            <div class="card-body">
+
+                <h5 class="card-title">{{ work.title }}</h5>
+                <p class="card-text">{{ work.description }}</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    {% if work.category %}
+                    <span class="badge work-badge">{{ work.category }}</span>
+                    {% endif %}
+                    {% for marker in work.markers %}
+                    <span class="badge work-badge-secondary">{{ marker.name }}</span>
+                    {% endfor %}
+                </div>
+
+            </div>
+
+            <div class="card-footer work-card-footer">
+                <small>Добавлено {{ work.created_at.strftime('%d.%m.%Y') }}</small>
+                <div class="d-flex gap-2 justify-content-end align-items-center">
+                    <!-- Кнопка редактирования -->
+                    <a href="{{ url_for('student.edit_work', work_id=work.id) }}" class="btn btn-sm work-card-btn">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    <!-- Кнопка удаления -->
+                    <form action="{{ url_for('student.delete_work', work_id=work.id) }}" method="POST" class="d-inline">
+                        <button type="submit" class="btn btn-sm work-card-btn"
+                                onclick="return confirm('Удалить работу?')">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {% endif %}
+    {% endfor %}
+    {% else %}
+    <div class="col-12 text-center">
+        <div class="alert alert-info">
+            У вас пока нет работ. Нажмите "Добавить работу", чтобы создать первую!
+        </div>
+    </div>
+    {% endif %}
+</div>
+</div>
+
+<!-- Модальное окно для изображений -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                <img src="" id="modalImage" class="img-fluid" style="max-height: 100vh; object-fit: contain;">
+                <button type="button"
+                        class="btn-close position-absolute top-0 end-0 m-3"
+                        style="filter: invert(1);"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для видео -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0 ratio ratio-16x9">
+                <video id="modalVideo" controls class="w-100 h-100">
+                    <source src="" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Новые цвета карточек */
+    .work-card {
+        background: #E6F0ED; /* Светло-бирюзовый */
+        border: 2px solid #8AB2A6;
+        border-radius: 12px;
+    }
+
+    .work-card-header {
+        background: #D3E4DF !important;
+        border-bottom: 2px solid #8AB2A6;
+        color: #3E3F5B;
+    }
+
+    .work-card-footer {
+        background: #D3E4DF !important;
+        border-top: 2px solid #8AB2A6;
+        color: #3E3F5B;
+    }
+
+    /* Стили для категорий */
+    .category-card {
+        background: #3E3F5B !important;
+        border: 2px solid #ACD3A8 !important;
+        border-radius: 8px !important;
+    }
+
+    .category-card h4 {
+        color: #ACD3A8 !important;
+        font-size: 1.25rem;
+    }
+
+    /* Бейджи */
+    .work-badge {
+        background: #8AB2A6;
+        color: #3E3F5B;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    .work-badge-secondary {
+        background: #ACD3A8;
+        color: #3E3F5B;
+        padding: 6px 12px;
+        border-radius: 20px;
+    }
+
+    /* Кнопки в карточках */
+    .work-card-btn {
+        background: #8AB2A6 !important;
+        color: #3E3F5B !important;
+        border: none !important;
+        padding: 4px 12px !important;
+        border-radius: 6px !important;
+    }
+    .dark-select {
+    background: #3E3F5B !important;
+    border: 2px solid #8AB2A6 !important;
+    color: #F6F1DE !important;
+    padding: 8px 15px !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    }
+
+    .dark-select:focus {
+    border-color: #ACD3A8 !important;
+    box-shadow: 0 0 0 3px rgba(138, 178, 166, 0.2) !important;
+    }
+</style>
+
+<script>
+    // Обработка модального окна для изображений
+    document.getElementById('imageModal').addEventListener('show.bs.modal', function(e) {
+        const imgSrc = e.relatedTarget.querySelector('img').src;
+        document.getElementById('modalImage').src = imgSrc;
+    });
+
+    // Обработка модального окна для видео
+    document.getElementById('videoModal').addEventListener('show.bs.modal', function(e) {
+        const videoUrl = e.relatedTarget.dataset.videoUrl;
+        const video = document.getElementById('modalVideo');
+        const source = video.querySelector('source');
+        source.src = videoUrl;
+        video.load();
+        video.play().catch(() => {});
+    });
+
+    document.getElementById('videoModal').addEventListener('hide.bs.modal', function() {
+        const video = document.getElementById('modalVideo');
+        video.pause();
+        video.currentTime = 0;
+        video.querySelector('source').src = '';
+        video.load();
+    });
+</script>
+
+
+{% endblock %}

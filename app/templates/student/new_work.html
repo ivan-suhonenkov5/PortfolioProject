@@ -1,0 +1,346 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Добавить новую работу{% endblock %}
+
+{% block content %}
+<div class="container-lg mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card dark-form">
+                <div class="card-header bg-form-header">
+                    <h1 class="form-title mb-0"><i class="bi bi-stack me-2"></i>Новая работа</h1>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+                        {{ form.hidden_tag() }}
+
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} mb-4">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+
+                        <!-- Выбор типа контента -->
+                        <div class="row g-3 mb-4">
+                            {% for value, label in form.content_category.choices %}
+                            <div class="col-md-2 col-6">
+                                <div class="card type-card {% if form.content_category.data == value %}active{% endif %}"
+                                     data-type="{{ value }}">
+                                    <div class="card-body text-center p-2">
+                                        <i class="bi
+                                    {% if value == 'category' %}bi-tag
+                                    {% elif value == 'link' %}bi-link-45deg
+                                    {% elif value == 'pdf' %}bi-file-pdf
+                                    {% elif value == 'video' %}bi-camera-reels
+                                    {% else %}bi-image{% endif %}
+                                    fs-3 mb-2 text-form-accent"></i>
+                                        <div class="form-link-sm">{{ label }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Скрытое поле для выбора типа -->
+                        {{ form.content_category(class="d-none") }}
+
+                        <!-- Основные поля -->
+                        <div id="common-fields">
+                            <div class="mb-4">
+                                {{ form.title.label(class="form-label") }}
+                                {{ form.title(class="form-control") }}
+                                {% for error in form.title.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="mb-4 ">
+                                {{ form.description.label(class="form-label") }}
+                                {{ form.description(class="form-control", rows="3") }}
+                                {% for error in form.description.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div id="markers-field" class="mb-4 d-none">
+                            {{ form.markers.label(class="form-label") }}
+                            {{ form.markers(class="form-control", placeholder="Введите маркеры через запятую") }}
+                            <small class="form-text text-muted">Пример: дизайн, фото, портфолио</small>
+                        </div>
+
+                        <!-- Поле для ввода собственной категории -->
+                        <div class="mb-4">
+                            {{ form.category.label(class="form-label") }}
+                            {{ form.category(class="form-control") }}
+                            {% for error in form.category.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Поле категории (если пользователь не ввел свою категорию) -->
+                        <div class="mb-4">
+                            {{ form.custom_category.label(class="form-label") }}
+                            {{ form.custom_category(class="form-control") }}
+                            {% for error in form.custom_category.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Поле URL для видео и ссылок -->
+                        <div id="url-field" class="mb-4 d-none">
+                            {{ form.url.label(class="form-label") }}
+                            {{ form.url(class="form-control", placeholder="https://example.com") }}
+                            {% for error in form.url.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Поле файла для PDF и изображений -->
+                        <div id="file-field" class="mb-4 d-none">
+                            {{ form.file.label(class="form-label") }}
+                            {{ form.file(class="form-control") }}
+                            <small class="form-text text-muted">
+                                Допустимые форматы:
+                                <span id="file-formats"></span>
+                            </small>
+                            {% for error in form.file.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Поле для загрузки видео -->
+                        <div id="video-file-field" class="mb-4 d-none">
+                            {{ form.video_file.label(class="form-label") }}
+                            {{ form.video_file(class="form-control") }}
+                            <small class="form-text text-muted">
+                                Допустимые форматы: MP4, MOV, AVI (максимум 100MB)
+                            </small>
+                            {% for error in form.video_file.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn form-btn">
+                                <i class="bi bi-save me-2"></i>Сохранить работу
+                            </button>
+                            <a href="{{ url_for('student.profile') }}" class="btn form-btn-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .dark-form {
+                background: #3E3F5B;
+                border: 2px solid #8AB2A6;
+                border-radius: 12px;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+
+            @media (max-width: 992px) {
+                .dark-form {
+                    margin: 0 15px;
+                }
+            }
+
+            .bg-form-header {
+                background: #2E2F45 !important;
+                border-bottom: 2px solid #8AB2A6;
+            }
+
+            .type-card {
+                background: #2E2F45;
+                border: 2px solid #8AB2A6;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .type-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 15px rgba(138, 178, 166, 0.2);
+            }
+
+            .type-card.active {
+                border-color: #ACD3A8;
+                background: #2E2F45;
+                box-shadow: 0 0 0 2px #ACD3A8;
+            }
+
+            .text-form-accent {
+                color: #ACD3A8;
+            }
+
+            .form-link-sm {
+                color: #F6F1DE;
+                font-size: 0.9rem;
+            }
+
+            .form-control {
+                background: #2E2F45 !important;
+                border: 2px solid #8AB2A6 !important;
+                color: #F6F1DE !important;
+            }
+
+            .form-control:focus {
+                border-color: #ACD3A8;
+                box-shadow: 0 0 0 3px rgba(138, 178, 166, 0.2);
+            }
+
+            .alert {
+                border: 2px solid;
+                background: #2E2F45;
+            }
+
+            .form-btn {
+                background: #8AB2A6 !important;
+                color: #3E3F5B !important;
+                border: none !important;
+                padding: 12px 24px !important;
+                border-radius: 8px !important;
+                transition: all 0.3s ease !important;
+            }
+
+            .form-btn:hover {
+                background: #ACD3A8 !important;
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(138, 178, 166, 0.2);
+            }
+
+            .form-btn-secondary {
+                background: #3E3F5B !important;
+                color: #ACD3A8 !important;
+                border: 2px solid #8AB2A6 !important;
+                padding: 12px 24px !important;
+                border-radius: 8px !important;
+                transition: all 0.3s ease !important;
+            }
+
+            .form-btn-secondary:hover {
+                background: #2E2F45 !important;
+                color: #F6F1DE !important;
+                border-color: #ACD3A8 !important;
+                transform: translateY(-2px);
+            }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Элементы управления
+                const cards = document.querySelectorAll('.type-card');
+                const urlField = document.getElementById('url-field');
+                const fileField = document.getElementById('file-field');
+                const videoField = document.getElementById('video-file-field');
+                const categoryField = document.getElementById('category-field');
+                const markersField = document.getElementById('markers-field');
+                const customCategoryField = document.getElementById('custom-category-field');
+                const commonFields = document.getElementById('common-fields');
+                const typeInput = document.querySelector('[name="content_category"]');
+                const form = document.querySelector('form');
+                const customCategoryInput = document.querySelector('[name="custom_category"]');
+                const categorySelect = document.querySelector('[name="category"]');
+
+                // Функция обновления видимости полей
+                function updateForm(type) {
+                    commonFields.style.display = 'block';
+                    [urlField, fileField, videoField, categoryField, markersField].forEach(field => {
+                        field?.classList.add('d-none');
+                    });
+
+                    switch(type) {
+                        case 'category':
+                            commonFields.style.display = 'none';
+                            categoryField.classList.remove('d-none');
+                            break;
+
+                        case 'link':
+                            urlField.classList.remove('d-none');
+                            break;
+
+                        case 'video':
+                            videoField.classList.remove('d-none');
+                            markersField.classList.remove('d-none');
+                            break;
+
+                        case 'pdf':
+                        case 'image':
+                            fileField.classList.remove('d-none');
+                            markersField.classList.remove('d-none');
+                            document.getElementById('file-formats').textContent =
+                                type === 'pdf' ? 'PDF' : 'PNG, JPG, JPEG';
+                            break;
+                    }
+
+                    cards.forEach(card => {
+                        card.classList.toggle('active', card.dataset.type === type);
+                    });
+                }
+
+                if(typeInput) {
+                    updateForm(typeInput.value);
+                }
+
+                cards.forEach(card => {
+                    card.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const type = this.dataset.type;
+                        typeInput.value = type;
+                        updateForm(type);
+                    });
+                });
+
+                customCategoryInput.addEventListener('input', function() {
+                    if (customCategoryInput.value.trim()) {
+                        categorySelect.selectedIndex = -1;
+                    } else {
+                        categorySelect.selectedIndex = 0;
+                    }
+                });
+
+                form?.addEventListener('submit', function(e) {
+                    const type = typeInput?.value;
+                    const videoInput = videoField?.querySelector('input[type="file"]');
+                    const fileInput = fileField?.querySelector('input[type="file"]');
+                    let isValid = true;
+
+                    switch(type) {
+                        case 'video':
+                            if(!videoInput?.files.length) {
+                                alert('Выберите видеофайл!');
+                                isValid = false;
+                            }
+                            break;
+
+                        case 'pdf':
+                        case 'image':
+                            if(!fileInput?.files.length) {
+                                alert('Выберите файл!');
+                                isValid = false;
+                            }
+                            break;
+
+                        case 'link':
+                            if(!urlField?.querySelector('input').value) {
+                                alert('Введите URL!');
+                                isValid = false;
+                            }
+                            break;
+                    }
+
+                    if(!isValid) {
+                        e.preventDefault();
+                    }
+                });
+            });
+        </script>
+        {% endblock %}

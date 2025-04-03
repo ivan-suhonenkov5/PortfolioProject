@@ -1,0 +1,232 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Редактирование профиля{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100 py-4">
+    <div class="col-12 col-md-10 col-lg-8 col-xl-6"> <!-- Изменения здесь -->
+        <div class="card dark-form">
+            <div class="card-header bg-form-header">
+                <h1 class="form-title mb-0"><i class="bi bi-person-gear me-2"></i>Редактирование профиля</h1>
+            </div>
+
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data" novalidate>
+                    {{ form.hidden_tag() }}
+
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} mb-4">
+                        {{ message }}
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
+                    <!-- Основная информация -->
+                    <div class="mb-5">
+                        <h4 class="border-bottom pb-2 mb-4 text-form-accent"><i class="bi bi-info-circle me-2"></i>Основная
+                            информация</h4>
+                        <div class="row g-4">
+                            <div class="col-md-6 form-group position-relative">
+                                <i class="bi bi-person-circle input-icon"></i>
+                                {{ form.username(class="form-control", placeholder="Логин") }}
+                                {% for error in form.username.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6 form-group position-relative">
+                                <i class="bi bi-envelope input-icon"></i>
+                                {{ form.email(class="form-control", placeholder="Email") }}
+                                {% for error in form.email.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6 form-group position-relative">
+                                <i class="bi bi-person input-icon"></i>
+                                {{ form.first_name(class="form-control", placeholder="Имя") }}
+                            </div>
+
+                            <div class="col-md-6 form-group position-relative">
+                                <i class="bi bi-person-badge input-icon"></i>
+                                {{ form.last_name(class="form-control", placeholder="Фамилия") }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Безопасность -->
+                    <div class="mb-5">
+                        <h4 class="border-bottom pb-2 mb-4 text-form-accent"><i class="bi bi-shield-lock me-2"></i>Безопасность
+                        </h4>
+                        <div class="row g-4">
+                            <div class="col-12 form-group position-relative">
+                                <i class="bi bi-key input-icon"></i>
+                                {{ form.current_password(class="form-control", placeholder="Текущий пароль") }}
+                                <small class="form-text text-muted mt-2">
+                                    Требуется только при смене пароля
+                                </small>
+                                {% for error in form.current_password.errors %}
+                                <div class="invalid-feedback d-block">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="col-md-6 form-group position-relative">
+                                <i class="bi bi-lock input-icon"></i>
+                                {{ form.new_password(class="form-control", placeholder="Новый пароль") }}
+                            </div>
+
+                            <div class="col-md-6 form-group position-relative">
+                                <i class="bi bi-lock-fill input-icon"></i>
+                                {{ form.confirm_password(class="form-control", placeholder="Подтвердите пароль") }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Профиль -->
+                    <div class="mb-4">
+                        <h4 class="border-bottom pb-2 mb-4 text-form-accent"><i
+                                class="bi bi-person-bounding-box me-2"></i>Профиль</h4>
+                        <div class="row g-4">
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label d-block"><i class="bi bi-image me-2"></i>Аватар</label>
+                                    {{ form.avatar(class="form-control") }}
+                                    {% if current_user.profile.avatar_url %}
+                                    <div class="mt-3">
+                                        <img src="{{ url_for('static', filename='uploads/avatars/' + current_user.profile.avatar_url) }}"
+                                             class="img-thumbnail rounded-circle"
+                                             style="max-width: 150px; border-color: #8AB2A6;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="col-12 form-group position-relative">
+                                <i class="bi bi-pen input-icon"></i>
+                                {{ form.bio(class="form-control", placeholder="О себе", rows=4) }}
+                            </div>
+
+                            <div class="col-md-6 form-group position-relative">
+                                <i class="bi bi-tools input-icon"></i>
+                                {{ form.skills(class="form-control", placeholder="Навыки") }}
+                                <small class="form-text text-muted mt-2">
+                                    Например: Python, Flask, SQL
+                                </small>
+                            </div>
+
+                            <div class="col-md-6 form-group position-relative">
+                                <i class="bi bi-mortarboard input-icon"></i>
+                                {{ form.education(class="form-control", placeholder="Образование") }}
+                            </div>
+
+                            <div class="col-12 form-group position-relative">
+                                <i class="bi bi-briefcase input-icon"></i>
+                                {{ form.experience(class="form-control", placeholder="Опыт работы", rows=3) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Кнопки -->
+                    <div class="d-grid gap-3">
+                        <button type="submit" class="btn form-btn">
+                            <i class="bi bi-save me-2"></i>Сохранить изменения
+                        </button>
+                        <a href="{{ url_for('student.profile') }}" class="btn form-btn-secondary">
+                            <i class="bi bi-x-circle me-2"></i>Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<style>
+    .dark-form {
+    background: #3E3F5B;
+    border: 2px solid #8AB2A6;
+    border-radius: 12px;
+    width: 100%;  /* Ширина 100% контейнера */
+    max-width: 800px;  /* Максимальная ширина формы (можно подкорректировать под ваши нужды) */
+    }
+
+    .bg-form-header {
+        background: #2E2F45 !important;
+        border-bottom: 2px solid #8AB2A6;
+    }
+
+    .form-title {
+        color: #ACD3A8;
+        font-weight: 600;
+    }
+
+    .text-form-accent {
+        color: #ACD3A8;
+        border-color: #8AB2A6 !important;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #8AB2A6;
+        z-index: 5;
+    }
+
+    .form-control {
+        background: #2E2F45 !important;
+        border: 2px solid #8AB2A6 !important;
+        color: #F6F1DE !important;
+        padding-left: 40px !important;
+        border-radius: 8px !important;
+    }
+
+    .form-control:focus {
+        border-color: #ACD3A8 !important;
+        box-shadow: 0 0 0 3px rgba(138, 178, 166, 0.2) !important;
+    }
+
+    .form-text.text-muted {
+        color: #8AB2A6 !important;
+        font-size: 0.85rem;
+    }
+
+    .img-thumbnail {
+        background: #2E2F45;
+        border: 2px solid #8AB2A6;
+    }
+
+    /* Добавленные стили для кнопки "Отмена" */
+    .form-btn-secondary {
+        background: #3E3F5B !important;
+        color: #ACD3A8 !important;
+        border: 2px solid #8AB2A6 !important;
+        padding: 12px 24px !important;
+        border-radius: 8px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .form-btn-secondary:hover {
+        background: #2E2F45 !important;
+        color: #F6F1DE !important;
+        border-color: #ACD3A8 !important;
+        transform: translateY(-2px);
+    }
+    .dark-form {
+        background: #3E3F5B;
+        border: 2px solid #8AB2A6;
+        border-radius: 12px;
+    }
+
+    .container {
+    padding: 20px;
+    display: flex;
+    justify-content: center;  /* Центрирует контейнер по горизонтали */
+}
+</style>
+{% endblock %}

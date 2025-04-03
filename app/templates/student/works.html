@@ -1,0 +1,39 @@
+{% extends 'main/base.html' %}  <!-- Наследуем от вашего базового шаблона -->
+
+{% block title %}Мои работы{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Мои работы</h2>
+    <a href="{{ url_for('student.new_work') }}" class="btn btn-primary mb-3">
+        + Новая работа
+    </a>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for work in works %}
+        <div class="col">
+            <div class="card h-100">
+                {% if work.image_url %}
+                <img src="{{ url_for('static', filename='uploads/works/' + work.image_url) }}" 
+                     class="card-img-top" 
+                     alt="{{ work.title }}">
+                {% endif %}
+                
+                <div class="card-body">
+                    <h5 class="card-title">{{ work.title }}</h5>
+                    <p class="card-text">{{ work.description }}</p>
+                    <div class="badge bg-primary">{{ work.category }}</div>
+                    {% for tag in work.markers %}
+                    <span class="badge bg-secondary me-1">{{ tag.name }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">Пока нет работ</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

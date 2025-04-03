@@ -1,0 +1,397 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Профиль {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Карточка профиля -->
+    <div class="d-flex justify-content-center">
+        <div class="card dark-form mb-4" style="max-width: 400px;">
+            <div class="card-body text-center">
+                {% if user.profile.avatar_url %}
+                <img src="{{ url_for('static', filename='uploads/avatars/' + user.profile.avatar_url) }}"
+                     class="rounded-circle mb-3 img-profile"
+                     alt="Аватар">
+                {% else %}
+                <div class="avatar-placeholder rounded-circle mx-auto mb-3">
+                    <i class="bi bi-person-circle"></i>
+                </div>
+                {% endif %}
+
+                <h1 class="form-title mb-2">{{ user.first_name }} {{ user.last_name }}</h1>
+                <p class="form-link">@{{ user.username }}</p>
+
+                {% if user.profile.bio %}
+                <div class="bio-text mt-3">
+                    {{ user.profile.bio }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Кнопка для резюме -->
+    <div class="text-center mt-4">
+        <a href="{{ url_for('student.download_resume', username=user.username) }}"
+           class="btn form-btn">
+            <i class="bi bi-file-earmark-arrow-down me-2"></i>Скачать резюме
+        </a>
+    </div>
+
+    <!-- Заголовок порфолио -->
+    <div class="d-flex align-items-center mb-4">
+        <h2 class="form-title me-3">Портфолио</h2>
+        <div class="flex-grow-1 border-top border-accent"></div>
+    </div>
+
+    <!-- Фильтр -->
+    <div class="mb-4">
+        <form method="GET" class="d-flex justify-content-end">
+            <select name="category" class="form-select dark-select" style="width: 250px;" onchange="this.form.submit()">
+                <option value="">Все категории</option>
+                {% for category in user_categories %}
+                <option value="{{ category }}" {% if category== request.args.get(
+                'category') %}selected{% endif %}>
+                {{ category }}
+                </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+
+    <!-- Сетка работ -->
+    <div class="row g-4 justify-content-center">
+        {% if works %}
+        {% for work in works %}
+        {% if work.content_category == 'category' %}
+        <!-- Категория -->
+        <div class="col-12">
+            <div class="category-card p-3 work-card">
+                <h4 class="fw-bold text-center mb-0">{{ work.title }}</h4>
+            </div>
+        </div>
+        {% else %}
+        <!-- Карточка работы -->
+        <div class="col-md-4">
+            <div class="card h-100 work-card">
+                {% if work.content_category == 'image' and work.file_url %}
+                <div class="card-img-container"
+                     data-bs-toggle="modal"
+                     data-bs-target="#imageModal"
+                     data-img-src="{{ url_for('static', filename='uploads/images/' + work.file_url) }}">
+                    <img src="{{ url_for('static', filename='uploads/images/' + work.file_url) }}"
+                         class="img-fluid"
+                         alt="{{ work.title }}">
+                </div>
+                {% elif work.content_category == 'pdf' and work.file_url %}
+                <div class="card-header work-card-header">
+                    <i class="bi bi-filetype-pdf"></i> PDF документ
+                    <a href="{{ url_for('student.view_pdf', filename=work.file_url) }}"
+                       class="btn work-card-btn"
+                       target="_blank">
+                        Просмотреть
+                    </a>
+                </div>
+                {% elif work.content_category == 'video' and work.video_url %}
+                <div class="card-video-container ratio ratio-16x9"
+                     data-bs-toggle="modal"
+                     data-bs-target="#videoModal"
+                     data-video-src="{{ url_for('static', filename='uploads/videos/' + work.video_url) }}">
+                    <video class="w-100 h-100">
+                        <source src="{{ url_for('static', filename='uploads/videos/' + work.video_url) }}">
+                    </video>
+                    <div class="video-overlay">
+                        <i class="bi bi-play-circle-fill"></i>
+                    </div>
+                </div>
+
+
+                {% elif work.content_category == 'link' and work.url %}
+                <div class="card-header work-card-header">
+                    <i class="bi bi-link-45deg"></i> Ссылка
+                    <a href="{{ work.url }}"
+                       target="_blank"
+                       class="btn work-card-btn">
+                        Открыть
+                    </a>
+                </div>
+                {% endif %}
+
+                <div class="card-body">
+                    <h5 class="card-title">{{ work.title }}</h5>
+                    <p class="card-text">{{ work.description }}</p>
+                    <div class="tags-container">
+                        {% if work.category %}
+                        <span class="badge work-badge">{{ work.category }}</span>
+                        {% endif %}
+                        {% for marker in work.markers %}
+                        <span class="badge work-badge-secondary">{{ marker.name }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="card-footer work-card-footer">
+                    <small>
+                        Добавлено {{ work.created_at.strftime('%d.%m.%Y') }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% else %}
+        <div class="col-12 text-center">
+            <div class="empty-state-card py-4">
+                <i class="bi bi-inbox fs-1"></i>
+                <p class="mt-3">У пользователя пока нет работ</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+
+<!-- Модальное окно для изображений -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-fullscreen">
+        <div class="modal-content bg-transparent border-0">
+            <div class="modal-body d-flex align-items-center justify-content-center p-0">
+                <img src="" id="modalImage" class="img-fluid" style="max-height: 100vh; object-fit: contain;">
+                <button type="button"
+                        class="btn-close position-absolute top-0 end-0 m-3"
+                        style="filter: invert(1);"
+                        data-bs-dismiss="modal"
+                        aria-label="Close">
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для видео -->
+<div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-0">
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-0 ratio ratio-16x9">
+                <video id="modalVideo" controls class="w-100 h-100">
+                    <source src="" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Общие стили карточек */
+     .dark-form {
+        background: #3E3F5B;
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-title {
+        color: #ACD3A8;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .form-link {
+        color: #8AB2A6;
+        font-size: 0.9rem;
+    }
+
+    .img-profile {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 3px solid #8AB2A6;
+    }
+
+    .avatar-placeholder {
+        width: 150px;
+        height: 150px;
+        background: #2E2F45;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #8AB2A6;
+        font-size: 4rem;
+    }
+
+    .bio-text {
+        color: #F6F1DE;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    .work-card {
+        background: #E6F0ED;
+        border: 2px solid #8AB2A6;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .work-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(62, 63, 91, 0.15);
+    }
+
+    .work-card-header {
+        background: #D3E4DF;
+        border-bottom: 2px solid #8AB2A6;
+        color: #3E3F5B;
+        padding: 1rem;
+    }
+
+    .work-card-footer {
+        background: #D3E4DF;
+        border-top: 2px solid #8AB2A6;
+        color: #3E3F5B;
+        padding: 1rem;
+    }
+
+    .card-img-container {
+        height: 200px;
+        overflow: hidden;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .card-img-container img {
+        transition: transform 0.3s ease;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    .card-img-container:hover img {
+        transform: scale(1.05);
+    }
+
+    /* Стили из первого шаблона */
+    .work-badge {
+        background: #8AB2A6;
+        color: #3E3F5B;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .work-badge-secondary {
+        background: #ACD3A8;
+        color: #3E3F5B;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .work-card-btn {
+        background: #8AB2A6;
+        color: #3E3F5B;
+        border: none;
+        padding: 6px 15px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .work-card-btn:hover {
+        background: #ACD3A8;
+    }
+    .category-card {
+    background: #3E3F5B !important;
+    border: 2px solid #ACD3A8 !important;
+    color: #ACD3A8 !important;
+    border-radius: 12px !important;
+    margin: 1rem 0;
+    padding: 1.5rem !important;
+    transition: all 0.3s ease;
+    }
+
+    .category-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(138, 178, 166, 0.2);
+    }
+
+    .category-card h4 {
+        color: inherit !important; /* Наследует цвет от родителя */
+        margin: 0;
+        font-size: 1.25rem;
+    }
+    .card-video-container {
+    overflow: hidden;
+    border-radius: 12px 12px 0 0;
+    cursor: pointer;
+    background: #2E2F45;
+    }
+
+    .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(46, 47, 69, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ACD3A8;
+        font-size: 3rem;
+        transition: all 0.3s ease;
+    }
+
+    .video-overlay:hover {
+        background: rgba(46, 47, 69, 0.3);
+    }
+
+    .card-video-container video {
+        object-fit: cover;
+        height: 100%;
+        width: 100%;
+    }
+    .dark-select {
+    background: #3E3F5B !important;
+    border: 2px solid #8AB2A6 !important;
+    color: #F6F1DE !important;
+    padding: 8px 15px !important;
+    border-radius: 8px !important;
+    transition: all 0.3s ease !important;
+    }
+
+    .dark-select:focus {
+        border-color: #ACD3A8 !important;
+        box-shadow: 0 0 0 3px rgba(138, 178, 166, 0.2) !important;
+    }
+
+
+</style>
+
+<script>
+    // Обработка модального окна для изображений
+    document.getElementById('imageModal').addEventListener('show.bs.modal', function(e) {
+        const imgSrc = e.relatedTarget.querySelector('img').src;
+        document.getElementById('modalImage').src = imgSrc;
+    });
+
+    // Обработка модального окна для видео
+    document.getElementById('videoModal').addEventListener('show.bs.modal', function(e) {
+    const videoSrc = e.relatedTarget.dataset.videoSrc;
+    const video = document.getElementById('modalVideo');
+    video.querySelector('source').src = videoSrc;
+    video.load();
+    video.play().catch(() => {});
+});
+
+    document.getElementById('videoModal').addEventListener('hide.bs.modal', function() {
+        const video = document.getElementById('modalVideo');
+        video.pause();
+        video.currentTime = 0;
+        video.querySelector('source').src = '';
+        video.load();
+    });
+</script>
+
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Авторизация{% endblock %}
+
+{% block content %}
+<div class="container d-flex justify-content-center align-items-center min-vh-100">
+    <div class="card p-4 dark-form" style="max-width: 400px; border-radius: 10px;">
+        <h3 class="text-center mb-4 form-title">Авторизация</h3>
+        <form method="post" class="d-flex flex-column gap-3">
+            {{ form.csrf_token }}
+
+            <!-- Логин -->
+            <div class="form-group position-relative">
+                <i class="bi bi-person input-icon"></i>
+                {{ form.username(class="form-control", placeholder="Логин") }}
+            </div>
+
+            <!-- Пароль -->
+            <div class="form-group position-relative">
+                <i class="bi bi-lock input-icon"></i>
+                {{ form.password(class="form-control", placeholder="Пароль") }}
+            </div>
+
+            <button type="submit" class="btn form-btn">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Войти
+            </button>
+
+            <div class="text-center mt-3">
+                <p class="form-link">Нет аккаунта?
+                    <a href="{{ url_for('user.register') }}"><i class="bi bi-person-plus me-1"></i>Зарегистрироваться</a>
+                </p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

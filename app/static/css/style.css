@@ -1,0 +1,507 @@
+@import url('fonts.css');
+
+body {
+  background-color: #F6F1DE; /* Основной бежевый из вашей палитры */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-image: linear-gradient(
+    to bottom right,
+    #F6F1DE 0%,
+    #F6F1DE 50%,
+    #ACD3A8 150%
+  );
+}
+
+.content {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 20px;
+  flex: 1 1 auto;
+}
+
+.card {
+  max-width: 450px;
+  width: 100%;
+}
+
+.card-title {
+  font-size: 24px;
+}
+
+.form-control {
+  font-size: 18px;
+  padding: 12px;
+}
+
+
+
+
+
+
+
+
+.file-upload-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 15px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #28a745;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.file-upload-label:hover {
+    background-color: #218838;
+}
+
+.file-upload-label i {
+    margin-right: 10px;
+}
+
+.file-upload-input {
+    display: none;
+}
+
+.file-name {
+    font-size: 14px;
+    color: #666;
+}
+
+.upload-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    color: #fff;
+    background-color: #17a2b8;
+    border:
+}
+
+
+.btn {
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+.page-wrapper {
+    min-height: 100vh; /* Минимальная высота страницы */
+    display: flex;
+    flex-direction: column;
+}
+
+.page-content {
+    flex: 1; /* Растягивает контент, отодвигая футер вниз */
+}
+
+
+.classes-grid {
+    display: flex;
+    flex-wrap: wrap; /* Чтобы карточки переносились на новую строку при нехватке места */
+    gap: 20px; /* Отступы между карточками */
+    justify-content: center; /* Центрирование карточек */
+}
+
+
+
+.subjects-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Расстояние между предметами */
+}
+
+.subject-card {
+    background-color: #ffffff;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #dee2e6;
+    text-align: center;
+}
+
+.card-img-container {
+  position: relative;
+  background: #f8f9fa;
+}
+
+
+.img-fluid {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+.works-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 колонки */
+    gap: 15px; /* Отступы */
+    justify-content: center;
+}
+
+
+.work-card {
+    min-height: 100px; /* Или другое значение */
+}
+
+
+.category-card {
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 10px;
+    height: 120px; /* Задаем меньшую высоту */
+}
+
+
+.handle {
+    display: inline-block; /* Было block, лучше inline-block */
+    cursor: grab;
+    font-size: 20px;
+    margin-right: 10px;
+    user-select: none; /* Чтобы нельзя было выделить */
+}
+
+
+
+.sortable-ghost {
+    opacity: 0.5;
+    background: #ddd;
+}
+
+.works-grid-org {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Сетка 3 колонки */
+    gap: 15px;
+}
+/* Уникальные стили карточек */
+
+.work-card-org {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    gap: 10px;
+}
+/* Категория в режиме организации (занимает 3 карточки) */
+.category-card-org {
+    grid-column: span 3;
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 1rem; /* Уменьшим текст */
+    padding: 10px;
+    height: auto; /* Сделаем автоматическую высоту */
+    min-height: 100px; /* Чтобы соответствовать work-card-org */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Захват для перетаскивания */
+.handle {
+    display: block;
+    cursor: grab;
+    font-size: 18px;
+    margin-right: 10px;
+}
+
+/* Прозрачность при перетаскивании */
+.sortable-ghost {
+    opacity: 0.5;
+    background: #ddd;
+}
+.category-card-org {
+    grid-column: span 3;
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+}
+.invalid-feedback {
+    padding: 4px 0 0 8px;
+    font-size: 0.85rem;
+}
+
+.form-control:focus {
+    border-color: #8AB2A6;
+    box-shadow: 0 0 0 0.2rem rgba(138, 178, 166, 0.25);
+}
+
+.btn {
+    transition: all 0.3s ease;
+}
+
+.navbar {
+  min-height: 70px; /* Увеличиваем высоту хедера */
+  padding: 0 1.5rem; /* Добавляем боковые отступы */
+}
+
+.navbar .container {
+  max-width: 1400px; /* Делаем контейнер шире стандартного */
+  margin: 0 auto;
+}
+/* Стили для всех кнопок в хедере */
+.navbar .nav-item .btn {
+  padding: 8px 20px;
+  border-radius: 8px;
+  margin-left: 15px;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  border: 2px solid #ACD3A8; /* Единая рамка */
+  color: #ACD3A8 !important; /* Цвет текста */
+  background-color: transparent; /* Прозрачный фон */
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+/* Стили для outline-кнопок */
+.navbar .btn-outline-light {
+  border: 2px solid #ACD3A8 !important;
+  color: #ACD3A8 !important;
+}
+
+.navbar .btn-outline-light:hover {
+  background-color: #ACD3A8 !important;
+  color: #3E3F5B !important;
+}
+
+/* Стили для кнопки "Регистрация" */
+.navbar .btn-warning {
+  background-color: #8AB2A6 !important;
+  border: 2px solid #8AB2A6 !important;
+  color: #3E3F5B !important;
+}
+
+.navbar .btn-warning:hover {
+  background-color: #ACD3A8 !important;
+  border-color: #ACD3A8 !important;
+}
+
+/* Стиль для текста приветствия */
+.navbar .welcome-text {
+  font-size: 15px;
+  margin-right: 15px;
+}
+
+/* Ховер-эффект для всех кнопок */
+.navbar .nav-item .btn:hover {
+  background-color: #ACD3A8 !important;
+  color: #3E3F5B !important;
+}
+
+/* Убираем стандартные стили Bootstrap */
+.navbar .btn-outline-light,
+.navbar .btn-warning {
+  all: unset; /* Сброс стилей */
+}
+
+/* Стили для форм */
+.custom-input {
+  border: 2px solid #8AB2A6 !important;
+  border-radius: 8px !important;
+  padding: 12px 15px !important;
+  transition: all 0.3s ease !important;
+}
+
+.custom-input:focus {
+  border-color: #3E3F5B !important;
+  box-shadow: 0 0 0 3px rgba(62, 63, 91, 0.1) !important;
+}
+
+.auth-btn {
+  background-color: #3E3F5B !important;
+  color: #FFFFFF !important;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+.auth-btn:hover {
+  background-color: #2E2F45 !important;
+  transform: translateY(-1px);
+}
+
+.invalid-feedback {
+  color: #dc3545 !important;
+  font-size: 0.85rem !important;
+  padding: 5px 0 0 10px !important;
+}
+
+.auth-link {
+  color: #5E5E5E !important;
+}
+
+.auth-link a {
+  color: #3E3F5B !important;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 2px solid #ACD3A8;
+}
+
+.auth-link a:hover {
+  color: #2E2F45 !important;
+}
+
+.dark-form {
+  background: #3E3F5B !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+  border: none !important;
+}
+
+.form-title {
+  color: #ACD3A8 !important;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Поля ввода */
+.dark-form .form-control {
+  background: #2E2F45 !important;
+  border: 2px solid #8AB2A6 !important;
+  color: #F6F1DE !important;
+  border-radius: 8px;
+  padding: 12px 15px;
+  transition: all 0.3s ease;
+}
+
+.dark-form .form-control::placeholder {
+  color: #8AB2A6 !important;
+  opacity: 0.8;
+}
+
+.dark-form .form-control:focus {
+  border-color: #ACD3A8 !important;
+  box-shadow: 0 0 0 3px rgba(138, 178, 166, 0.2) !important;
+}
+
+/* Кнопки */
+.form-btn {
+  background: #8AB2A6 !important;
+  color: #3E3F5B !important;
+  font-weight: 500;
+  padding: 12px !important;
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.form-btn:hover {
+  background: #ACD3A8 !important;
+  transform: translateY(-1px);
+}
+
+/* Ссылки */
+.form-link {
+  color: #8AB2A6 !important;
+}
+
+.form-link a {
+  color: #ACD3A8 !important;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 2px solid;
+}
+
+.form-link a:hover {
+  color: #F6F1DE !important;
+}
+
+/* Ошибки */
+.invalid-feedback {
+  color: #FF6B6B !important;
+  font-size: 0.85rem;
+  padding: 5px 0 0 10px;
+}
+.dark-form {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dark-form:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+}
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8AB2A6;
+  z-index: 2;
+}
+
+.form-control {
+  padding-left: 40px !important;
+}
+/* Иконки внутри инпутов */
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8AB2A6;
+  font-size: 1.1rem;
+  z-index: 2;
+}
+
+/* Отступ для текста в инпутах */
+.dark-form .form-control {
+  padding-left: 40px !important;
+}
+
+/* Иконки в кнопках */
+.btn .bi {
+  font-size: 1.1em;
+  vertical-align: middle;
+}
+
+/* Ховер для иконок в ссылках */
+.form-link a:hover .bi {
+  color: #F6F1DE !important;
+  transition: color 0.3s ease;
+}
+.card.work-card {
+  background: #FFFFFF;
+  border: 2px solid #8AB2A6;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(62, 63, 91, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card.work-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(62, 63, 91, 0.2);
+}
+
+.card.work-card .card-header {
+  background: #F6F1DE;
+  border-bottom: 2px solid #8AB2A6;
+}
+
+.card.work-card .card-title {
+  color: #3E3F5B;
+  font-weight: 600;
+}
+
+.card.work-card .card-text {
+  color: #5E5E5E;
+}
+
+.card.work-card .card-footer {
+  background: #F6F1DE;
+  border-top: 2px solid #8AB2A6;
+}
+
+
+

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Резюме</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .avatar {
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+        }
+        .content {
+            margin-top: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h3 {
+            margin-bottom: 10px;
+        }
+        .section p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+<div class="header">
+    <!-- Вставляем аватар -->
+    <img src="{{ 'http://localhost:5000' + url_for('static', filename='uploads/avatars/' + user.profile.avatar_url) }}" alt="Аватар" class="avatar">
+    <h1>{{ user.first_name }} {{ user.last_name }}</h1>
+</div>
+
+<div class="content">
+    <!-- Раздел "О себе" -->
+    <div class="section">
+        <h3>О себе</h3>
+        <p>{{ profile.bio }}</p>
+    </div>
+
+    <!-- Раздел "Навыки" -->
+    <div class="section">
+        <h3>Навыки</h3>
+        <p>{{ profile.skills }}</p>
+    </div>
+
+    <!-- Раздел "Образование" -->
+    <div class="section">
+        <h3>Образование</h3>
+        <p>{{ profile.education }}</p>
+    </div>
+
+    <!-- Раздел "Опыт работы" -->
+    <div class="section">
+        <h3>Опыт работы</h3>
+        <p>{{ profile.experience }}</p>
+    </div>
+</div>
+
+</body>
+</html>

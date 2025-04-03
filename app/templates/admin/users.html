@@ -1,0 +1,203 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Админка - Пользователи{% endblock %}
+
+{% block content %}
+<div class="container-fluid p-0">  <!-- Убрали боковые отступы -->
+    <div class="row justify-content-center m-0">  <!-- Убрали маргины -->
+         <div class="col-xxl-12 col-xl-12 col-lg-12 p-4">  <!-- Явное центрирование -->
+            <div class="card mx-auto" style="max-width: 1700px">
+                <div class="card-header bg-form-header d-flex justify-content-between align-items-center">
+                    <h1 class="form-title mb-0">
+                        <i class="bi bi-people me-2"></i>Управление пользователями
+                    </h1>
+                    <a href="{{ url_for('admin.create_user') }}" class="btn form-btn">
+                        <i class="bi bi-person-plus me-2"></i>Создать
+                    </a>
+                </div>
+
+               <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th><i class="bi bi-hash me-1"></i>ID</th>
+                                    <th><i class="bi bi-person-circle me-1"></i>Логин</th>
+                                    <th><i class="bi bi-envelope me-1"></i>Email</th>
+                                    <th><i class="bi bi-person me-1"></i>Имя</th>
+                                    <th><i class="bi bi-person-badge me-1"></i>Фамилия</th>
+                                    <th><i class="bi bi-gear me-1"></i>Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ user.id }}</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.first_name }}</td>
+                                    <td>{{ user.last_name }}</td>
+                                    <td>
+                                        <div class="d-flex gap-3 flex-nowrap">
+                                            <a href="{{ url_for('admin.edit_user', user_id=user.id) }}"
+                                               class="btn form-btn-secondary btn-sm">
+                                                <i class="bi bi-pencil-square"></i> Ред.
+                                            </a>
+                                            <form action="{{ url_for('admin.delete_user', user_id=user.id) }}"
+                                                  method="POST" class="d-inline">
+                                                <button type="submit"
+                                                        class="btn btn-danger btn-sm"
+                                                        onclick="return confirm('Удалить пользователя?')">
+                                                    <i class="bi bi-trash3"></i> Удл.
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container-fluid {
+        max-width: 1800px;
+        margin: 0 auto;
+        min-height: 100vh;
+    }
+
+    .dark-form {
+        background: #2A2B3F;
+        border-radius: 15px;
+        border: none;
+    }
+
+    .bg-form-header {
+        background: #3A3B5F !important;
+        padding: 1.5rem 2rem;
+        border-bottom: 2px solid #8AB2A6 !important;
+    }
+
+    .form-title {
+        color: #ACD3A8 !important;
+        font-size: 1.8rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .table {
+        --bs-table-bg: #2E2F45;
+        --bs-table-border-color: #8AB2A6;
+        --bs-table-hover-bg: #3A3B60;
+        color: #F6F1DE;
+        margin-bottom: 0;
+    }
+
+    .table th {
+        color: #ACD3A8 !important;
+        border-bottom: 2px solid #8AB2A6;
+        font-size: 1.1rem;
+        padding: 1.2rem;
+        background: #3A3B5F;
+        white-space: nowrap;
+    }
+
+    .table td {
+        vertical-align: middle;
+        padding: 1rem 1.2rem;
+        border-bottom: 1px solid #4A4B6F;
+        font-size: 0.95rem;
+    }
+
+    .form-btn, .form-btn-secondary {
+        padding: 10px 25px !important;
+        border-radius: 8px !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        font-weight: 500;
+        font-size: 1rem;
+        border: 2px solid transparent !important;
+    }
+
+    .form-btn {
+        background: #8AB2A6 !important;
+        color: #2A2B3F !important;
+    }
+
+    .form-btn-secondary {
+        background: #4A4B6F !important;
+        color: #ACD3A8 !important;
+        border-color: #8AB2A6 !important;
+    }
+
+    .form-btn:hover {
+        background: #ACD3A8 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(138, 178, 166, 0.3);
+    }
+
+    .form-btn-secondary:hover {
+        background: #5A5B7F !important;
+        transform: translateY(-2px);
+    }
+
+    .btn-danger {
+        background: #ff6b6b !important;
+        color: #F6F1DE !important;
+        padding: 10px 25px !important;
+        border-radius: 8px !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-danger:hover {
+        background: #ff5252 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    .bi {
+        font-size: 1.25em;
+        vertical-align: -2px;
+    }
+
+    @media (max-width: 1600px) {
+        .container-fluid {
+            max-width: 95%;
+        }
+
+        .table th {
+            padding: 1rem;
+            font-size: 1rem;
+        }
+
+        .table td {
+            padding: 0.8rem 1rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem !important;
+        }
+
+        .form-title {
+            font-size: 1.4rem;
+        }
+
+        .form-btn, .form-btn-secondary, .btn-danger {
+            padding: 8px 15px !important;
+            font-size: 0.9rem;
+        }
+
+        .d-flex.gap-3 {
+            gap: 1rem !important;
+            flex-wrap: wrap;
+        }
+    }
+</style>
+{% endblock %}

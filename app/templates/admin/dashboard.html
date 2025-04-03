@@ -1,0 +1,56 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Админка - Главная{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex align-items-center mb-5">
+        <h1 class="form-title mb-0">Админ-панель</h1>
+        <div class="flex-grow-1 border-top border-accent ms-3"></div>
+    </div>
+
+    <div class="admin-card-grid">
+        <a href="{{ url_for('admin.users') }}" class="admin-card dark-form">
+            <div class="admin-card-content">
+                <i class="bi bi-people-fill admin-card-icon"></i>
+                <h3 class="form-title mb-0">Пользователи</h3>
+                <p class="form-link mb-0">Управление учетными записями</p>
+            </div>
+        </a>
+
+        <!-- Добавьте дополнительные карточки по аналогии -->
+    </div>
+</div>
+
+<style>
+    .admin-card-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .admin-card {
+        border: 2px solid #8AB2A6;
+        border-radius: 12px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+        text-decoration: none !important;
+    }
+
+    .admin-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(138, 178, 166, 0.15);
+        border-color: #ACD3A8;
+    }
+
+    .admin-card-content {
+        text-align: center;
+    }
+
+    .admin-card-icon {
+        font-size: 2.5rem;
+        color: #ACD3A8;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}

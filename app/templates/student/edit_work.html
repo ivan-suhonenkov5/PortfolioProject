@@ -1,0 +1,198 @@
+{% extends 'main/base.html' %}
+
+{% block content %}
+<div class="container-lg mt-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="card dark-form">
+                <div class="card-header bg-form-header">
+                    <h1 class="form-title mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>
+                        Редактировать {{ 'категорию' if work.content_category == 'category' else 'работу' }}
+                    </h1>
+                </div>
+
+                <div class="card-body">
+                    <form method="POST" enctype="multipart/form-data" novalidate>
+                        {{ form.hidden_tag() }}
+                        {{ form.existing_video }}
+                        {{ form.existing_file }}
+
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            <ul class="mb-0">
+                                {% for field, errors in form.errors.items() %}
+                                {% for error in errors %}
+                                <li>{{ error }}</li>
+                                {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
+
+                        <div class="row g-3 mb-4">
+                            {% for value, label in form.content_category.choices %}
+                            <div class="col-md-2 col-6">
+                                <div class="card type-card {% if form.content_category.data == value %}active{% endif %}"
+                                     data-type="{{ value }}">
+                                    <div class="card-body text-center p-2">
+                                        <i class="bi
+                                            {% if value == 'category' %}bi-tag
+                                            {% elif value == 'link' %}bi-link-45deg
+                                            {% elif value == 'pdf' %}bi-file-pdf
+                                            {% elif value == 'video' %}bi-camera-reels
+                                            {% else %}bi-image{% endif %}
+                                            fs-3 mb-2 text-form-accent"></i>
+                                        <div class="form-link-sm">{{ label }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <div id="common-fields"
+                             class="{% if form.content_category.data == 'category' %}d-none{% endif %}">
+                            <div class="mb-4">
+                                {{ form.title.label(class="form-label") }}
+                                {{ form.title(class="form-control" + (' is-invalid' if form.title.errors else '')) }}
+                                {% for error in form.title.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="mb-4">
+                                {{ form.description.label(class="form-label") }}
+                                {{ form.description(class="form-control" + (' is-invalid' if form.description.errors
+                                else ''), rows=3) }}
+                                {% for error in form.description.errors %}
+                                <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div id="markers-field"
+                             class="mb-4 {% if form.content_category.data not in ['video','pdf','image'] %}d-none{% endif %}">
+                            {{ form.markers.label(class="form-label") }}
+                            {{ form.markers(class="form-control" + (' is-invalid' if form.markers.errors else '')) }}
+                            {% for error in form.markers.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-4">
+                            {% if form.content_category.data == 'category' %}
+                            {{ form.custom_category.label(class="form-label") }}
+                            {{ form.custom_category(class="form-control" + (' is-invalid' if form.custom_category.errors
+                            else '')) }}
+                            {% else %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    {{ form.category.label(class="form-label") }}
+                                    {{ form.category(class="form-select" + (' is-invalid' if form.category.errors else
+                                    '')) }}
+                                </div>
+                                <div class="col-md-6">
+                                    {{ form.custom_category.label(class="form-label") }}
+                                    {{ form.custom_category(class="form-control" + (' is-invalid' if
+                                    form.custom_category.errors else '')) }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div id="video-file-field"
+                             class="mb-4 {% if form.content_category.data != 'video' %}d-none{% endif %}">
+                            {{ form.video_file.label(class="form-label") }}
+                            {{ form.video_file(class="form-control" + (' is-invalid' if form.video_file.errors else ''))
+                            }}
+                            {% if work.video_url %}
+                            <div class="mt-2">
+                                <span class="text-success">Текущий файл: {{ work.video_url }}</span>
+                            </div>
+                            {% endif %}
+                            {% for error in form.video_file.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div id="file-field"
+                             class="mb-4 {% if form.content_category.data not in ['pdf','image'] %}d-none{% endif %}">
+                            {{ form.file.label(class="form-label") }}
+                            {{ form.file(class="form-control" + (' is-invalid' if form.file.errors else '')) }}
+                            {% if work.file_url %}
+                            <div class="mt-2">
+                                <span class="text-success">Текущий файл: {{ work.file_url }}</span>
+                            </div>
+                            {% endif %}
+                            {% for error in form.file.errors %}
+                            <div class="invalid-feedback">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn form-btn">
+                                <i class="bi bi-save me-2"></i>Сохранить изменения
+                            </button>
+                            <a href="{{ url_for('student.profile') }}" class="btn form-btn-secondary">
+                                <i class="bi bi-x-circle me-2"></i>Отменить
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const typeCards = document.querySelectorAll('.type-card');
+        const typeInput = document.querySelector('#content_category');
+
+        function updateUI(type) {
+            document.querySelectorAll('.type-card').forEach(card => {
+                card.classList.toggle('active', card.dataset.type === type);
+            });
+
+            document.getElementById('common-fields').style.display =
+                type === 'category' ? 'none' : 'block';
+
+            document.getElementById('markers-field').style.display =
+                ['video','pdf','image'].includes(type) ? 'block' : 'none';
+        }
+
+        typeCards.forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                const newType = this.dataset.type;
+                if (confirm('Изменить тип контента? Текущие файлы будут удалены!')) {
+                    typeInput.value = newType;
+                    updateUI(newType);
+                }
+            });
+        });
+
+        // Инициализация
+        updateUI('{{ form.content_category.data }}');
+    });
+</script>
+
+<style>
+    .type-card {
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    .type-card:hover {
+        transform: translateY(-3px);
+    }
+    .type-card.active {
+        border: 2px solid #4CAF50;
+        background-color: rgba(76, 175, 80, 0.1);
+    }
+    .invalid-feedback {
+        display: block;
+        color: #dc3545;
+        font-size: 0.875em;
+    }
+</style>
+{% endblock %}
