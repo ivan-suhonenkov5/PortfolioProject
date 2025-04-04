@@ -119,11 +119,13 @@
                 </a>
                 <!-- Кнопка удаления -->
                 <form action="{{ url_for('student.delete_work', work_id=work.id) }}" method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="btn btn-sm work-card-btn"
                             onclick="return confirm('Удалить категорию?')">
                         <i class="bi bi-trash"></i>
                     </button>
                 </form>
+
             </div>
         </div>
     </div>
@@ -201,11 +203,13 @@
                     </a>
                     <!-- Кнопка удаления -->
                     <form action="{{ url_for('student.delete_work', work_id=work.id) }}" method="POST" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                         <button type="submit" class="btn btn-sm work-card-btn"
                                 onclick="return confirm('Удалить работу?')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </form>
+
                 </div>
             </div>
 
