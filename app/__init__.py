@@ -11,7 +11,7 @@ import pdfkit
 from flask_wtf.csrf import CSRFProtect
 import os
 
-pdfkit_path = os.getenv("WKHTMLTOPDF_PATH", "/usr/bin/wkhtmltopdf")
+pdfkit_path = os.getenv("WKHTMLTOPDF_PATH", "PythonProject/wkhtmltopdf/wkhtmltopdf.exe")
 pdfkit_config = pdfkit.configuration(wkhtmltopdf=pdfkit_path)
 
 def create_app(config_class=Config):
