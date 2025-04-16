@@ -29,5 +29,7 @@ ENV WKHTMLTOPDF_PATH=/usr/bin/wkhtmltopdf
 # Переменная для Flask
 ENV FLASK_APP=run.py
 
+RUN wkhtmltopdf --version
+
 # Запуск
 CMD ["python", "run.py"]
