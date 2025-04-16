@@ -54,18 +54,18 @@
 
 <!-- Заголовок секции -->
 <div class="d-flex align-items-center mb-4">
-    <h2 class="form-title me-3">Portfolio</h2>
+    <h2 class="form-title me-3">Портфолио</h2>
     <div class="flex-grow-1 border-top border-accent"></div>
     <div class="ms-3">
         <a href="{{ url_for('student.organize_works', user_id=current_user.id) }}"
            class="btn form-btn me-2">
-            <i class="bi bi-columns-gap"></i> ORGANIZE
+            <i class="bi bi-columns-gap"></i> ОРГАНИЗОВАТЬ
         </a>
         <div class="btn-group">
             <button class="btn form-btn dropdown-toggle"
                     type="button"
                     data-bs-toggle="dropdown">
-                <i class="bi bi-plus-lg"></i> ADD ITEM
+                <i class="bi bi-plus-lg"></i> ДОБАВИТЬ
             </button>
             <ul class="dropdown-menu dark-dropdown">
                 <li><a class="dropdown-item" href="{{ url_for('student.new_work') }}?type=link">

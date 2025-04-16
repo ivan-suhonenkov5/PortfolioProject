@@ -18,7 +18,8 @@
         {% if work.content_category == 'category' %}
         <div class="category-card-org" data-id="{{ work.id }}">
             <span class="handle">☰</span>
-            <h4 class="fw-bold text-center mb-0 flex-grow-1">{{ work.category }}</h4>
+            <h4 class="fw-bold text-center mb-0 flex-grow-1">{{ work.category if work.category else "Без категории"
+                }}</h4>
         </div>
         {% else %}
         <div class="work-card-org" data-id="{{ work.id }}">

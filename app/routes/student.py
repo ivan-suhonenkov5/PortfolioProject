@@ -1,4 +1,5 @@
 import os
+import re
 from urllib import request
 from flask import current_app
 from flask import Blueprint, render_template, redirect, url_for, flash, request, send_file, jsonify, Response
@@ -176,6 +177,7 @@ def edit_profile():
         form.education.data = current_user.profile.education
         form.experience.data = current_user.profile.experience
 
+    # Если форма валидна при сабмите
     if form.validate_on_submit():
         try:
             # Обновляем User
@@ -193,19 +195,40 @@ def edit_profile():
             # Явно добавляем профиль в сессию
             db.session.add(current_user.profile)
 
-            # Обновляем пароль если нужно
+            # Проверка пароля, если указан новый
             if form.new_password.data:
+                if not form.current_password.data:
+                    flash('Для изменения пароля нужно указать текущий пароль', 'danger')
+                    return redirect(url_for('student.edit_profile'))  # Переходим обратно на страницу редактирования
+
+                # Проверка текущего пароля
+                if not bcrypt.check_password_hash(current_user.password_hash, form.current_password.data):
+                    flash('Неверный текущий пароль', 'danger')
+                    return redirect(url_for('student.edit_profile'))  # Переходим обратно на страницу редактирования
+
+                # Проверка нового пароля на количество символов и наличие строчных букв
+                new_password = form.new_password.data
+                if len(new_password) < 8:
+                    flash('Пароль должен содержать хотя бы 8 символов', 'danger')
+                    return redirect(url_for('student.edit_profile'))  # Переходим обратно на страницу редактирования
+
+                if not re.search(r'[a-z]', new_password):
+                    flash('Пароль должен содержать хотя бы одну строчную букву', 'danger')
+                    return redirect(url_for('student.edit_profile'))  # Переходим обратно на страницу редактирования
+
+                # Генерация нового хэша пароля
                 current_user.password_hash = bcrypt.generate_password_hash(
-                    form.new_password.data
+                    new_password
                 ).decode('utf-8')
 
-            # Обновляем аватар
+            # Обновляем аватар, если есть
             if form.avatar.data:
                 if current_user.profile.avatar_url:
                     delete_image(current_user.profile.avatar_url, 'avatars')
                 filename = save_image(form.avatar.data, 'avatars')
                 current_user.profile.avatar_url = filename
 
+            # Сохраняем изменения
             db.session.commit()
             flash('Профиль успешно обновлен!', 'success')
             return redirect(url_for('student.profile'))
@@ -216,7 +239,6 @@ def edit_profile():
             current_app.logger.error(f'Profile update error: {str(e)}')
 
     return render_template('student/edit_profile.html', form=form)
-
 
 @student.route('/download/<path:filename>')
 @login_required
@@ -272,9 +294,11 @@ def organize_works(user_id):
     # GET-запрос - отображение страницы
     works = Work.query.filter_by(user_id=user_id).order_by(Work.order.asc().nulls_last()).all()
     works_data = [
-        {"id": w.id, "title": w.title, "content_category": w.content_category or "", "order": w.order or 0}
+        {"id": w.id, "title": w.title, "content_category": w.content_category or "", "category": w.category or "",
+         "order": w.order or 0}
         for w in works
     ]
+
     return render_template("student/organize_works.html", works=works_data, user_id=user_id)
 
 
@@ -407,7 +431,7 @@ def delete_work(work_id):
     work = Work.query.get_or_404(work_id)
 
     if work.user_id != current_user.id:
-        abort(403)  # Запрещаем удалять чужие работы
+        abort(403)
 
     db.session.delete(work)
     db.session.commit()

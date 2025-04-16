@@ -2,7 +2,6 @@ from flask import Blueprint, redirect, render_template, flash, url_for, request
 from flask_login import login_user, logout_user, current_user
 from urllib.parse import urlparse, urljoin
 
-from ..helpers import save_image
 from ..forms import RegistrationForm, LoginForm
 from ..extensions import db, bcrypt
 from ..models.models import User
@@ -25,24 +24,42 @@ def is_safe_url(target):
     return redirect_url.scheme in ('http', 'https') and \
         host_url.netloc == redirect_url.netloc
 
+
 @user.route('/')
 def home():
     logout_user()  # Разлогиниваем пользователя
     return redirect(url_for('user.login'))
 
+
 @user.route('/user/register', methods=['POST', 'GET'])
 def register():
     form = RegistrationForm()
     if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user:
+            flash("Пользователь с таким логином уже существует!", "danger")
+            return render_template('user/register.html', form=form)
+
+        user = User.query.filter_by(email=form.email.data).first()
+        if user:
+            flash("Пользователь с таким email уже существует!", "danger")
+            return render_template('user/register.html', form=form)
+
+        if form.password.data != form.confirm_password.data:
+            flash("Пароли не совпадают!", "danger")
+            return render_template('user/register.html', form=form)
+
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+
         user = User(
             username=form.username.data,
             email=form.email.data,
             first_name=form.first_name.data,
             last_name=form.last_name.data,
             password_hash=hashed_password,
-            role_id=2  # ID роли 'user' по умолчанию
+            role_id=2
         )
+
         try:
             db.session.add(user)
             db.session.commit()
@@ -52,6 +69,7 @@ def register():
         except Exception as e:
             db.session.rollback()
             flash(f"При регистрации произошла ошибка: {str(e)}", "danger")
+
     return render_template('user/register.html', form=form)
 
 
@@ -67,7 +85,6 @@ def login():
             if next_page and is_safe_url(next_page):
                 return redirect(next_page)
 
-            flash(f"Добро пожаловать, {form.username.data}!", "success")
             return redirect_based_on_role()
 
         flash("Ошибка входа. Проверьте логин и пароль!", "danger")
@@ -79,6 +96,3 @@ def logout():
     logout_user()
     flash("Вы успешно вышли из системы", "success")
     return redirect(url_for("user.login"))
-
-
-

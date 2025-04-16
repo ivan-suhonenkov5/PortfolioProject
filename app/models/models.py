@@ -81,7 +81,6 @@ class Work(db.Model):
     markers = db.relationship('SearchMarker', secondary=work_markers, back_populates='works', lazy='dynamic')
 
     def get_category(self):
-        """Возвращает либо стандартную, либо пользовательскую категорию"""
         return self.category if self.category else self.content_category
 
 

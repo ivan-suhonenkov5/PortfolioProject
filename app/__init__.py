@@ -27,6 +27,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
     assets.init_app(app)
+    app.run(debug=True)
 
     # LOGIN MANAGER
     login_manager.login_view = "user.login"

@@ -35,31 +35,27 @@
 </head>
 <body>
 <div class="header">
-    <!-- Вставляем аватар -->
     <img src="{{ 'http://localhost:5000' + url_for('static', filename='uploads/avatars/' + user.profile.avatar_url) }}" alt="Аватар" class="avatar">
     <h1>{{ user.first_name }} {{ user.last_name }}</h1>
 </div>
 
 <div class="content">
-    <!-- Раздел "О себе" -->
     <div class="section">
         <h3>О себе</h3>
         <p>{{ profile.bio }}</p>
     </div>
 
-    <!-- Раздел "Навыки" -->
     <div class="section">
         <h3>Навыки</h3>
         <p>{{ profile.skills }}</p>
     </div>
 
-    <!-- Раздел "Образование" -->
     <div class="section">
         <h3>Образование</h3>
         <p>{{ profile.education }}</p>
     </div>
 
-    <!-- Раздел "Опыт работы" -->
+
     <div class="section">
         <h3>Опыт работы</h3>
         <p>{{ profile.experience }}</p>

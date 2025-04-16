@@ -17,8 +17,8 @@ class Config(object):
                               'postgresql://postgres:1234@127.0.0.1:5432/resumedb'
     SECRET_KEY = "hfjsdkflsdfkjsdhfsdf3"
     SQLALCHEMY_TRACK_MODIFICATIONS = "True"
-    # WTF_CSRF_ENABLED = True
-    # WTF_CSRF_SECRET_KEY = "hfjsdkflsdfkjsdhfsdf3"
+    WTF_CSRF_ENABLED = True
+    WTF_CSRF_SECRET_KEY = "hfjsdkflsdfkjsdhfsdf3"
 
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Путь к папке app/
     UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')  # Правильный путь

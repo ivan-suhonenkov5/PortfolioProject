@@ -107,7 +107,7 @@ def edit_user(user_id):
     return render_template('admin/edit_user.html', form=form, user=user)
 
 
-# Удаление пользователя
+
 @admin.route('/admin/users/delete/<int:user_id>', methods=['POST'])
 @login_required
 def delete_user(user_id):

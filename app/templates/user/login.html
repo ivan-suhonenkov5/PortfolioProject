@@ -13,12 +13,26 @@
             <div class="form-group position-relative">
                 <i class="bi bi-person input-icon"></i>
                 {{ form.username(class="form-control", placeholder="Логин") }}
+                {% if form.username.errors %}
+                    <div class="text-danger">
+                        {% for error in form.username.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
 
             <!-- Пароль -->
             <div class="form-group position-relative">
                 <i class="bi bi-lock input-icon"></i>
                 {{ form.password(class="form-control", placeholder="Пароль") }}
+                {% if form.password.errors %}
+                    <div class="text-danger">
+                        {% for error in form.password.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
 
             <button type="submit" class="btn form-btn">
@@ -31,6 +45,17 @@
                 </p>
             </div>
         </form>
+
+        <!-- Сообщения об ошибках входа -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert alert-{{ messages[0][0] }} mt-3">
+                    {% for category, message in messages %}
+                        <p class="mb-0">{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
     </div>
 </div>
 {% endblock %}

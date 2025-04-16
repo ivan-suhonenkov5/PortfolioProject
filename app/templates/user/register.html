@@ -49,6 +49,19 @@
                 <i class="bi bi-person-check me-2"></i>Зарегистрироваться
             </button>
 
+            <!-- Общие ошибки формы -->
+            {% if form.errors %}
+                <div class="text-danger mt-3">
+                    <ul>
+                        {% for field, errors in form.errors.items() %}
+                            {% for error in errors %}
+                                <li><strong>{{ field|capitalize }}:</strong> {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
             <div class="text-center mt-3">
                 <p class="form-link">Уже есть аккаунт?
                     <a href="{{ url_for('user.login') }}"><i class="bi bi-box-arrow-in-right me-1"></i>Войти</a>
