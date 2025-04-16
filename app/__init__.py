@@ -9,8 +9,10 @@ from .routes.admin import admin
 from .routes.student import student
 import pdfkit
 from flask_wtf.csrf import CSRFProtect
+import os
 
-pdfkit_config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+pdfkit_path = os.getenv("WKHTMLTOPDF_PATH", "/usr/bin/wkhtmltopdf")
+pdfkit_config = pdfkit.configuration(wkhtmltopdf=pdfkit_path)
 
 def create_app(config_class=Config):
     app = Flask("__name__", template_folder='app/templates', static_folder='app/static')
@@ -27,7 +29,7 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     login_manager.init_app(app)
     assets.init_app(app)
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
 
     # LOGIN MANAGER
     login_manager.login_view = "user.login"

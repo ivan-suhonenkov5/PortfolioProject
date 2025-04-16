@@ -14,7 +14,7 @@ class Config(object):
     DB = os.environ.get("POSTGRES_DB", "resumedb")
 
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-                              'postgresql://postgres:1234@127.0.0.1:5432/resumedb'
+                              'postgresql://postgres:1234@db:5432/resumedb'
     SECRET_KEY = "hfjsdkflsdfkjsdhfsdf3"
     SQLALCHEMY_TRACK_MODIFICATIONS = "True"
     WTF_CSRF_ENABLED = True
