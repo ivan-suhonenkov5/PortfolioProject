@@ -5,11 +5,12 @@ from .extensions import db, migrate, login_manager, assets
 from .config import Config
 
 from .routes.user import user
-from .routes.admin import admin
+from .routes.admin import admin, backup
 from .routes.student import student
 import pdfkit
 from flask_wtf.csrf import CSRFProtect
 import os
+
 
 pdfkit_path = os.getenv("WKHTMLTOPDF_PATH", "/usr/bin/wkhtmltopdf")
 pdfkit_config = pdfkit.configuration(wkhtmltopdf=pdfkit_path)
@@ -20,9 +21,11 @@ def create_app(config_class=Config):
     csrf = CSRFProtect(app)
     app.config['PDFKIT_CONFIG'] = pdfkit_config
 
+
     app.register_blueprint(user)
     app.register_blueprint(admin)
     app.register_blueprint(student)
+    # app.register_blueprint(backup)
 
 
     db.init_app(app)

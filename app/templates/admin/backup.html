@@ -1,0 +1,51 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Резервное копирование{% endblock %}
+
+{% block content %}
+<br>
+<div class="backup-container">
+
+    <div class="backup-section">
+        <div class="backup-actions">
+            <!-- Кнопка создать бэкап -->
+            <a href="{{ url_for('backup.backup_database') }}" class="backup-button" style="font-size: 1.2rem; padding: 10px 20px;">
+                <i class="fas fa-database"></i> Создать бэкап
+            </a>
+
+            {% if session.get('backup_file') %}
+            <!-- Кнопка скачать бэкап -->
+            <a href="{{ url_for('backup.download_backup') }}" class="backup-download-button" style="font-size: 1.2rem; padding: 10px 20px;">
+                <i class="fas fa-download"></i> Скачать бэкап
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="upload-section">
+        <h3 class="upload-title" style="font-size: 1.6rem;">Загрузить бэкап</h3>
+
+        <!-- Форма загрузки -->
+        <form action="{{ url_for('backup.upload_backup') }}" method="post" enctype="multipart/form-data" class="upload-form">
+            <div class="file-upload-container">
+                <label for="file-upload" class="file-upload-label" style="font-size: 1.1rem;">
+                    <i class="fas fa-upload"></i> Выберите файл (.sql)
+                </label>
+                <input type="file" id="file-upload" name="file" class="file-upload-input" accept=".sql" required/>
+                <span id="file-name" class="file-name" style="font-size: 1rem;">Файл не выбран</span>
+            </div>
+
+            <button type="submit" class="upload-button" style="font-size: 1.2rem; padding: 10px 20px;">
+                <i class="fas fa-cloud-upload-alt"></i> Загрузить
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.getElementById('file-upload').addEventListener('change', function() {
+        const fileName = this.files[0] ? this.files[0].name : 'Файл не выбран';
+        document.getElementById('file-name').textContent = fileName;
+    });
+</script>
+{% endblock %}

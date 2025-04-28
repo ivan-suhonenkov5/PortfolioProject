@@ -7,9 +7,9 @@
     <div class="card p-4 dark-form" style="max-width: 400px; border-radius: 10px;">
         <h3 class="text-center mb-4 form-title">Авторизация</h3>
         <form method="post" class="d-flex flex-column gap-3">
+
             {{ form.csrf_token }}
 
-            <!-- Логин -->
             <div class="form-group position-relative">
                 <i class="bi bi-person input-icon"></i>
                 {{ form.username(class="form-control", placeholder="Логин") }}

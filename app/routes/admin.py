@@ -120,3 +120,30 @@ def delete_user(user_id):
     db.session.commit()
     flash('Пользователь успешно удален', 'success')
     return redirect(url_for('admin.users'))
+
+# Бэкап
+@admin.route('/admin/backup')
+@login_required
+def backup():
+    if not is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect('/')
+    return render_template('admin/backup.html')
+
+# Логи приложения
+@admin.route('/admin/logs')
+@login_required
+def logs():
+    if not is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect('/')
+    return render_template('admin/logs.html')
+
+# Страницы пользователей
+@admin.route('/admin/pages')
+@login_required
+def pages():
+    if not is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect('/')
+    return render_template('admin/pages.html')
