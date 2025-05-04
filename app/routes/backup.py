@@ -3,12 +3,15 @@ import subprocess
 import threading
 from datetime import datetime
 
+
 from flask import (
     Blueprint, render_template, flash, url_for, request, redirect,
     send_file, session, current_app
 )
 from flask_login import login_required
 from werkzeug.utils import secure_filename
+
+from app.forms import BackupForm
 
 backup = Blueprint('backup', __name__, url_prefix='/admin')
 
@@ -29,7 +32,8 @@ def execute_command(command):
 @backup.route('/backup', methods=['GET'])
 @login_required
 def backup_page():
-    return render_template('admin/backup.html')
+    form = BackupForm()  # Создаем форму
+    return render_template('admin/backup.html', form=form)  # Передаем форму в шаблон
 
 @backup.route('/create', methods=['GET'])
 @login_required
@@ -62,33 +66,36 @@ def backup_database():
 
     return redirect(url_for('backup.backup_page'))
 
-@backup.route('/upload', methods=['POST'])
+
+@backup.route('/upload', methods=['POST', 'GET'])
 @login_required
 def upload_backup():
-    if 'file' not in request.files:
-        flash('Нет файла в запросе', 'danger')
-        return redirect(url_for('backup.backup_page'))
+    form = BackupForm()
 
-    file = request.files['file']
-    if file.filename == '':
-        flash('Файл не выбран', 'danger')
-        return redirect(url_for('backup.backup_page'))
+    if form.validate_on_submit():
+        if 'file' not in request.files:
+            flash('Нет файла в запросе', 'danger')
+            return redirect(url_for('backup.backup_page'))
 
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        backup_path = os.path.join(os.getcwd(), "backups", filename)
-        file.save(backup_path)
+        file = request.files['file']
+        if file.filename == '':
+            flash('Файл не выбран', 'danger')
+            return redirect(url_for('backup.backup_page'))
 
-        db_url = current_app.config['SQLALCHEMY_DATABASE_URI']
+        if file and allowed_file(file.filename):
+            filename = secure_filename(file.filename)
+            backup_path = os.path.join(os.getcwd(), "backups", filename)
+            file.save(backup_path)
 
-        thread = threading.Thread(target=reset_schema_and_restore, args=(backup_path, db_url))
-        thread.start()
+            db_url = current_app.config['SQLALCHEMY_DATABASE_URI']
 
-        flash('Восстановление запущено. Пожалуйста, подождите.', 'success')
-        return redirect(url_for('backup.backup_page'))
+            thread = threading.Thread(target=reset_schema_and_restore, args=(backup_path, db_url))
+            thread.start()
 
-    flash('Неверный формат файла. Пожалуйста, загрузите файл .sql.', 'danger')
-    return redirect(url_for('backup.backup_page'))
+            flash('Восстановление запущено. Пожалуйста, подождите.', 'success')
+            return redirect(url_for('backup.backup_page'))
+
+    return render_template('admin/backup.html', form=form)
 
 @backup.route('/download', methods=['GET'])
 @login_required

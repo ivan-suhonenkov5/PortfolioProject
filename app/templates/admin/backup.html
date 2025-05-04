@@ -3,47 +3,67 @@
 {% block title %}Резервное копирование{% endblock %}
 
 {% block content %}
-<br>
-<div class="backup-container">
+<div class="d-flex justify-content-center">
+    <div class="card dark-form mb-4" style="max-width: 500px;">
+        <div class="card-body text-center">
 
-    <div class="backup-section">
-        <div class="backup-actions">
-            <!-- Кнопка создать бэкап -->
-            <a href="{{ url_for('backup.backup_database') }}" class="backup-button" style="font-size: 1.2rem; padding: 10px 20px;">
-                <i class="fas fa-database"></i> Создать бэкап
-            </a>
+            <h2 class="form-title mb-4">Бэкап базы данных</h2>
 
-            {% if session.get('backup_file') %}
-            <!-- Кнопка скачать бэкап -->
-            <a href="{{ url_for('backup.download_backup') }}" class="backup-download-button" style="font-size: 1.2rem; padding: 10px 20px;">
-                <i class="fas fa-download"></i> Скачать бэкап
-            </a>
+            <!-- Флеш-сообщения -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-3">
+                {% for category, message in messages %}
+                <div class="alert alert-{{ 'success' if category == 'success' else 'warning' }} alert-dismissible fade show"
+                     role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Закрыть"></button>
+                </div>
+                {% endfor %}
+            </div>
             {% endif %}
-        </div>
-    </div>
+            {% endwith %}
 
-    <div class="upload-section">
-        <h3 class="upload-title" style="font-size: 1.6rem;">Загрузить бэкап</h3>
-
-        <!-- Форма загрузки -->
-        <form action="{{ url_for('backup.upload_backup') }}" method="post" enctype="multipart/form-data" class="upload-form">
-            <div class="file-upload-container">
-                <label for="file-upload" class="file-upload-label" style="font-size: 1.1rem;">
-                    <i class="fas fa-upload"></i> Выберите файл (.sql)
-                </label>
-                <input type="file" id="file-upload" name="file" class="file-upload-input" accept=".sql" required/>
-                <span id="file-name" class="file-name" style="font-size: 1rem;">Файл не выбран</span>
+            <!-- Кнопки на одном уровне -->
+            <div class="d-flex justify-content-center gap-2 mb-4 flex-wrap">
+                <a href="{{ url_for('backup.backup_database') }}"
+                   class="btn form-btn"
+                   style="background: #8AB2A6; color: #2A2B3F; border: none;">
+                    <i class="bi bi-hdd-fill me-2"></i>Создать бэкап
+                </a>
+                {% if session.get('backup_file') %}
+                <a href="{{ url_for('backup.download_backup') }}"
+                   class="btn form-btn"
+                   style="background: #ACD3A8; color: #2A2B3F; border: none;">
+                    <i class="bi bi-download me-2"></i>Скачать бэкап
+                </a>
+                {% endif %}
             </div>
 
-            <button type="submit" class="upload-button" style="font-size: 1.2rem; padding: 10px 20px;">
-                <i class="fas fa-cloud-upload-alt"></i> Загрузить
-            </button>
-        </form>
+            <!-- Загрузка бэкапа -->
+            <h3 class="form-title mt-4 mb-3">Загрузить бэкап</h3>
+            <form action="{{ url_for('backup.upload_backup') }}" method="post" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+
+                <div class="mb-3 text-start">
+                    <label for="file-upload" class="form-label" style="color: #F6F1DE;">
+                        <i class="bi bi-upload me-2"></i>Выберите файл (.sql)
+                    </label>
+                    <input class="form-control dark-select" type="file" id="file-upload" name="file" accept=".sql" required>
+                    <div class="form-text" id="file-name" style="color: #8AB2A6;">Файл не выбран</div>
+                </div>
+
+                <button type="submit" class="btn form-btn mt-2"
+                        style="background: #8AB2A6; color: #2A2B3F; border: none;">
+                    <i class="bi bi-cloud-upload-fill me-2"></i>Загрузить
+                </button>
+            </form>
+        </div>
     </div>
 </div>
 
 <script>
-    document.getElementById('file-upload').addEventListener('change', function() {
+    document.getElementById('file-upload').addEventListener('change', function () {
         const fileName = this.files[0] ? this.files[0].name : 'Файл не выбран';
         document.getElementById('file-name').textContent = fileName;
     });

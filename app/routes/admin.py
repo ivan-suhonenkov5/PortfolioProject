@@ -1,8 +1,12 @@
+import os
+
 from flask import Blueprint, render_template, redirect, url_for, flash
 from flask_login import login_required, current_user
 from ..models.models import User, Role
 from ..extensions import db, bcrypt
-from ..forms import EditUserForm, CreateUserForm
+from ..forms import EditUserForm, CreateUserForm, BackupForm
+from flask_mail import Message
+from ..extensions import mail
 
 admin = Blueprint('admin', __name__)
 
@@ -128,16 +132,9 @@ def backup():
     if not is_admin():
         flash('Доступ запрещен', 'danger')
         return redirect('/')
-    return render_template('admin/backup.html')
 
-# Логи приложения
-@admin.route('/admin/logs')
-@login_required
-def logs():
-    if not is_admin():
-        flash('Доступ запрещен', 'danger')
-        return redirect('/')
-    return render_template('admin/logs.html')
+    form = BackupForm()  # Создаем форму
+    return render_template('admin/backup.html', form=form)  # Передаем форму в шаблон
 
 # Страницы пользователей
 @admin.route('/admin/pages')
@@ -147,3 +144,52 @@ def pages():
         flash('Доступ запрещен', 'danger')
         return redirect('/')
     return render_template('admin/pages.html')
+
+
+@admin.route("/logs")
+@login_required
+def show_logs():
+    if current_user.role.name != "admin":
+        return redirect(url_for("user.login"))
+
+    log_file_path = 'app.log'
+    logs = []
+    try:
+        if os.path.exists(log_file_path):
+            with open(log_file_path, 'r', encoding='utf-8') as log_file:
+                logs = log_file.readlines()
+        else:
+            logs = ["No logs available."]
+    except UnicodeDecodeError:
+        logs = ["Error reading log file due to encoding issues."]
+
+    return render_template("admin/logs.html", logs=logs)
+
+@admin.route('/admin/users/block/<int:user_id>', methods=['POST'])
+@login_required
+def toggle_block_user(user_id):
+    if not is_admin():
+        flash('Доступ запрещен', 'danger')
+        return redirect('/')
+
+    user = User.query.get_or_404(user_id)
+    user.is_blocked = not user.is_blocked  # Переключаем статус блокировки
+
+    # Отправляем письмо пользователю, если его заблокировали
+    if user.is_blocked:
+        send_block_notification(user)
+
+    db.session.commit()
+    return redirect(url_for('admin.users'))
+
+def send_block_notification(user):
+    """Отправка уведомления на почту о блокировке"""
+    msg = Message(
+        subject="Вы были заблокированы",
+        recipients=[user.email],
+        body=f"Здравствуйте, {user.username}. Ваш аккаунт был заблокирован администратором. Если это ошибка, обратитесь к поддержке по этому адресу ivansuhonenkov80@gmail.com"
+    )
+    try:
+        mail.send(msg)
+    except Exception as e:
+        flash(f"Ошибка при отправке уведомления: {str(e)}", 'danger')

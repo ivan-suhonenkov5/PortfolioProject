@@ -79,14 +79,19 @@ def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user and bcrypt.check_password_hash(user.password_hash, form.password.data):
-            login_user(user, remember=form.remember.data)
-            next_page = request.args.get('next')
+        if user:
+            if user.is_blocked:
+                flash("Ваша учётная запись заблокирована. Обратитесь к администратору. ivansuhonenkov80@gmail.com", "warning")
+                return redirect(url_for("user.login"))
 
-            if next_page and is_safe_url(next_page):
-                return redirect(next_page)
+            if bcrypt.check_password_hash(user.password_hash, form.password.data):
+                login_user(user, remember=form.remember.data)
+                next_page = request.args.get('next')
 
-            return redirect_based_on_role()
+                if next_page and is_safe_url(next_page):
+                    return redirect(next_page)
+
+                return redirect_based_on_role()
 
         flash("Ошибка входа. Проверьте логин и пароль!", "danger")
     return render_template("user/login.html", form=form)

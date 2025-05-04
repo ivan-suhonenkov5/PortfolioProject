@@ -38,23 +38,34 @@
                                 <td>{{ user.first_name }}</td>
                                 <td>{{ user.last_name }}</td>
                                 <td>
-                                    <div class="d-flex gap-3 flex-nowrap">
+                                    <div class="d-flex gap-2 flex-nowrap">
                                         <a href="{{ url_for('admin.edit_user', user_id=user.id) }}"
-                                           class="btn form-btn-secondary btn-sm">
-                                            <i class="bi bi-pencil-square"></i> Ред.
+                                           class="btn-action form-btn-secondary">
+                                            <i class="bi bi-pencil-square me-1"></i>Ред.
                                         </a>
+
                                         <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" method="POST"
                                               class="d-inline">
                                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                                            <button type="submit" class="btn btn-danger btn-sm"
+                                            <button type="submit" class="btn-action form-btn-danger"
                                                     onclick="return confirm('Удалить пользователя?')">
-                                                <i class="bi bi-trash3"></i> Удл.
+                                                <i class="bi bi-trash3 me-1"></i>Удл.
                                             </button>
                                         </form>
 
+                                        <form action="{{ url_for('admin.toggle_block_user', user_id=user.id) }}"
+                                              method="POST" class="d-inline">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit"
+                                                    class="btn-action {% if user.is_blocked %}form-btn-blocked{% else %}form-btn-unblocked{% endif %}">
+                                                <i class="bi {% if user.is_blocked %}bi-unlock{% else %}bi-lock-fill{% endif %} me-1"></i>
+                                                {% if user.is_blocked %}Разблокировать{% else %}Заблокировать{% endif %}
+                                            </button>
+                                        </form>
 
                                     </div>
                                 </td>
+
                             </tr>
                             {% endfor %}
                             </tbody>
@@ -201,5 +212,87 @@
             flex-wrap: wrap;
         }
     }
+    .form-btn-warning {
+        background: #E7B966 !important; /* тёплый бежево-оранжевый */
+        color: #2A2B3F !important;
+        padding: 10px 25px !important;
+        border-radius: 8px !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border: 2px solid transparent !important;
+    }
+
+    .form-btn-warning:hover {
+        background: #F3CA7D !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(231, 185, 102, 0.3);
+    }
+    .form-btn-danger {
+    background: #ff6b6b !important;
+    color: #F6F1DE !important;
+    padding: 10px 25px !important;
+    border-radius: 8px !important;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    border: 2px solid transparent !important;
+    }
+
+    .form-btn-danger:hover {
+        background: #ff5252 !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    }
+
+    .form-btn-unblocked {
+        background: #E7B966 !important;
+        color: #2A2B3F !important;
+        padding: 8px 20px !important;
+        border-radius: 8px !important;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        border: 2px solid transparent !important;
+    }
+
+    .form-btn-unblocked:hover {
+        background: #F3CA7D !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(231, 185, 102, 0.3);
+    }
+
+    .form-btn-blocked {
+        background: #D87272 !important;
+        color: #F6F1DE !important;
+        padding: 8px 20px !important;
+        border-radius: 8px !important;
+        font-weight: 500;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        border: 2px solid transparent !important;
+    }
+
+    .form-btn-blocked:hover {
+        background: #E85A5A !important;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(216, 114, 114, 0.3);
+    }
+
+    .small-btn {
+        font-size: 0.9rem !important;
+        padding: 8px 20px !important;
+    }
+    .btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px !important;
+    font-size: 0.85rem !important;
+    border-radius: 6px !important;
+    font-weight: 500;
+    white-space: nowrap;
+    line-height: 1.2;
+    }
+
 </style>
 {% endblock %}

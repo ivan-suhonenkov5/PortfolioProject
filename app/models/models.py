@@ -32,6 +32,7 @@ class User(db.Model, UserMixin):
     last_name = db.Column(db.String(50))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'), default=2)
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    is_blocked = db.Column(db.Boolean, default=False)
 
     profile = db.relationship('Profile', backref='user', uselist=False, cascade='all, delete-orphan', lazy='joined')
     role = db.relationship('Role', backref=db.backref('users', lazy='dynamic'))

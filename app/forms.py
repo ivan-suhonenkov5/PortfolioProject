@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from flask_wtf.file import FileAllowed
+from flask_wtf.file import FileAllowed, FileRequired, FileField
 from wtforms import (
     StringField, PasswordField, SubmitField, FileField,
-    TextAreaField, SelectField, BooleanField, HiddenField
+    TextAreaField, SelectField, BooleanField, HiddenField,SubmitField
 )
 from wtforms.validators import (
     DataRequired, Length, Email, EqualTo, ValidationError,
@@ -251,3 +251,8 @@ class SearchForm(FlaskForm):
     query = StringField("Поиск по маркерам",
                         validators=[DataRequired(), Length(max=100)])
     submit = SubmitField("Найти")
+
+
+class BackupForm(FlaskForm):
+    file = FileField('Загрузите файл .sql', validators=[FileRequired()])
+    submit = SubmitField('Загрузить')
