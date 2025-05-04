@@ -16,7 +16,7 @@ import atexit
 from pathlib import Path
 from flask_mail import Mail
 # Настройка pdfkit
-pdfkit_config = pdfkit.configuration(wkhtmltopdf=r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe')
+pdfkit_config = pdfkit.configuration(wkhtmltopdf=r'wkhtmltopdf.exe')
 
 
 def create_app(config_class=Config):
